@@ -10,6 +10,7 @@ using TweetBook.Contracts.V1;
 using TweetBook.Contracts.V1.Requests;
 using TweetBook.Contracts.V1.Responses;
 using TweetBook.Domain;
+using TweetBook.Extensions;
 using TweetBook.Services;
 
 namespace TweetBook.Controllers.v1
@@ -44,6 +45,11 @@ namespace TweetBook.Controllers.v1
         [HttpPut(ApiRoutes.Posts.Update)]
         public async Task<IActionResult> Update([FromRoute] Guid postId, [FromBody] UpdatePostRequest _updateRequest)
         {
+            var _userOwnsPost = await _postService.UserOwnsPostAsync(postId, HttpContext.GetUserId());
+            if(!_userOwnsPost)
+            {
+                return BadRequest(new { error = "?" });
+            }
             var post = new Post()
             {
                 Id = postId,
@@ -61,6 +67,12 @@ namespace TweetBook.Controllers.v1
         [HttpDelete(ApiRoutes.Posts.Delete)]
         public async Task<IActionResult> Delete([FromRoute] Guid postId)
         {
+            var _userOwnsPost = await _postService.UserOwnsPostAsync(postId, HttpContext.GetUserId());
+            if (!_userOwnsPost)
+            {
+                return BadRequest(new { error = "?" });
+            }
+
             var deleted = await _postService.DeletePostAsync(postId);
 
             if (deleted)
@@ -72,7 +84,8 @@ namespace TweetBook.Controllers.v1
         [HttpPost(ApiRoutes.Posts.Create)]
         public async Task<IActionResult> Create([FromBody] CreatePostRequest postRequest)
         {
-            var post = new Post { Name = postRequest.Name };
+            var post = new Post { Name = postRequest.Name,
+            UserId = HttpContext.GetUserId()};
        
             await _postService.CreatePostAsync(post);
 
@@ -81,5 +94,7 @@ namespace TweetBook.Controllers.v1
             var responose = new PostResponse { Id = post.Id };
             return Created(location, responose);
         }
+
+
     }
 }

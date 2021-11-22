@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TweetBook.Data;
 
 namespace TweetBook.Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211120053734_Add_UserId_ToPosts")]
+    partial class Add_UserId_ToPosts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -238,37 +240,6 @@ namespace TweetBook.Data.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("TweetBook.Domain.RefreshToken", b =>
-                {
-                    b.Property<string>("Token")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("ExpiryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Invalidated")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("JwtId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Used")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Token");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RefreshTokens");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -321,15 +292,6 @@ namespace TweetBook.Data.Migrations
                 });
 
             modelBuilder.Entity("TweetBook.Domain.Post", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("TweetBook.Domain.RefreshToken", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
